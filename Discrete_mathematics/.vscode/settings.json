@@ -1,0 +1,6 @@
+{
+  "python.terminal.executeInFileDir": true,
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "files.autoSave": "afterDelay",
+  "python.analysis.autoImportCompletions": true
+}

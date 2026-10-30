@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Seating Optimization | Discrete Mathematics</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-purple: #c084fc;
+      --accent-green: #4ade80;
+      --accent-amber: #fbbf24;
+      --accent-red: #f87171;
+      --mth-color: #38bdf8;
+      --phy-color: #c084fc;
+      --chm-color: #34d399;
+      --csc-color: #fb923c;
+      --empty-color: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .project-titles h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .project-titles h1 span.badge {
+      font-size: 0.75rem;
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    .project-titles p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .student-badge {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--card-border);
+      padding: 0.6rem 1rem;
+      border-radius: 0.75rem;
+      text-align: right;
+    }
+
+    .student-badge .name {
+      font-weight: 600;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+    }
+
+    .student-badge .meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Controls & Tabs */
+    .controls-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 0.35rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--card-border);
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .toggle-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+
+    .method-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      background: rgba(51, 65, 85, 0.8);
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: #3b82f6;
+      border-color: #60a5fa;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .btn {
+      background: rgba(51, 65, 85, 0.6);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #475569;
+    }
+
+    .btn-primary {
+      background: #10b981;
+      border-color: #34d399;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #059669;
+    }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent-blue);
+    }
+
+    .kpi-card.success::before { background: var(--accent-green); }
+    .kpi-card.warning::before { background: var(--accent-amber); }
+    .kpi-card.danger::before { background: var(--accent-red); }
+    .kpi-card.purple::before { background: var(--accent-purple); }
+
+    .kpi-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .kpi-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 0.3rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Main Grid & Legend Layout */
+    .content-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1080px) {
+      .content-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .grid-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .grid-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .grid-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .grid-instructions {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* The Seating Matrix */
+    .seating-matrix {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .seating-matrix {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .seat-cell {
+      background: #0f172a;
+      border: 1.5px solid var(--card-border);
+      border-radius: 0.6rem;
+      padding: 0.75rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      min-height: 95px;
+      user-select: none;
+    }
+
+    .seat-cell:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+      border-color: #38bdf8;
+    }
+
+    .seat-cell.is-neighbor {
+      border-color: #38bdf8 !important;
+      background: rgba(56, 189, 248, 0.12) !important;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .seat-cell.is-hovered {
+      border-color: #facc15 !important;
+      background: rgba(250, 204, 21, 0.15) !important;
+      box-shadow: 0 0 16px rgba(250, 204, 21, 0.4);
+    }
+
+    .seat-cell.is-conflict {
+      border-color: #ef4444 !important;
+      background: rgba(239, 68, 68, 0.2) !important;
+      animation: pulseConflict 1.5s infinite;
+    }
+
+    @keyframes pulseConflict {
+      0%, 100% { box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 18px rgba(239, 68, 68, 0.8); }
+    }
+
+    .seat-pos {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      position: absolute;
+      top: 5px;
+      left: 6px;
+      font-family: monospace;
+    }
+
+    .seat-color-badge {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      position: absolute;
+      top: 5px;
+      right: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    .course-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.35rem;
+      margin-top: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .course-tag.mth { background: rgba(56, 189, 248, 0.2); color: var(--mth-color); border: 1px solid rgba(56, 189, 248, 0.4); }
+    .course-tag.phy { background: rgba(192, 132, 252, 0.2); color: var(--phy-color); border: 1px solid rgba(192, 132, 252, 0.4); }
+    .course-tag.chm { background: rgba(52, 211, 153, 0.2); color: var(--chm-color); border: 1px solid rgba(52, 211, 153, 0.4); }
+    .course-tag.csc { background: rgba(251, 146, 60, 0.2); color: var(--csc-color); border: 1px solid rgba(251, 146, 60, 0.4); }
+    .course-tag.empty { background: rgba(100, 116, 139, 0.15); color: var(--empty-color); border: 1px dashed var(--empty-color); }
+
+    .student-roll {
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      margin-top: 0.3rem;
+      font-weight: 500;
+    }
+
+    .student-name-sub {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90%;
+      text-align: center;
+      margin-top: 0.15rem;
+    }
+
+    /* Sidebar Panel */
+    .sidebar-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .side-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.25rem;
+    }
+
+    .side-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-main);
+    }
+
+    .course-legend-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.6rem;
+      background: #0f172a;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.82rem;
+    }
+
+    .legend-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .legend-count {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    /* Pigeonhole Interactive Box */
+    .php-box {
+      background: #0f172a;
+      border-radius: 0.6rem;
+      padding: 0.9rem;
+      border: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      font-size: 0.82rem;
+    }
+
+    .php-status {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 700;
+    }
+
+    .php-status.pass { color: var(--accent-green); }
+    .php-status.fail { color: var(--accent-red); }
+
+    .slider-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Comparison Table Section */
+    .comparison-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+    }
+
+    .comparison-section h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .custom-table th {
+      background: #0f172a;
+      padding: 0.75rem 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 2px solid var(--card-border);
+    }
+
+    .custom-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .custom-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .score-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+
+    .score-zero {
+      background: rgba(74, 222, 128, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .score-nonzero {
+      background: rgba(248, 113, 113, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+
+    /* Theory Collapsible Drawer */
+    .theory-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+    }
+
+    .theory-header {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .theory-content {
+      margin-top: 1.25rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .theorem-card {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .theorem-card h4 {
+      color: var(--accent-blue);
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #0f172a;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="project-titles">
+        <h1>
+          Graph-Theoretic Exam Seating
+          <span class="badge">Discrete Mathematics</span>
+        </h1>
+        <p>Minimising Adjacent Conflicts Using Graph Vertex Colouring & Independent Sets</p>
+      </div>
+      <div class="student-badge">
+        <div class="name">Pranjali Nitin Bharsakale</div>
+        <div class="meta">PRN: 1251070295 &bull; Roll No: 2</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- Controls Panel -->
+    <section class="controls-panel">
+      <!-- Connectivity Toggle -->
+      <div>
+        <div class="toggle-group">
+          <button id="btnNoDiag" class="toggle-btn active" onclick="setConnectivity(false)">
+            <span>✛</span> 4-Way (No Diagonals)
+          </button>
+          <button id="btnDiag" class="toggle-btn" onclick="setConnectivity(true)">
+            <span>✻</span> 8-Way (With Diagonals)
+          </button>
+        </div>
+      </div>
+
+      <!-- Placement Method Tabs -->
+      <div class="method-tabs">
+        <button id="tabRand" class="tab-btn" onclick="setMethod('random')">1. Random Baseline</button>
+        <button id="tabPattern" class="tab-btn active" onclick="setMethod('pattern')">2. Graph Pattern Colouring</button>
+        <button id="tabOpt" class="tab-btn" onclick="setMethod('optimize')">3. Hill Climbing</button>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-btns">
+        <button class="btn btn-primary" id="btnSimulate" onclick="runHillClimbingLive()">
+          ▶ Live Optimization
+        </button>
+        <button class="btn" onclick="resetOrRegenerate()">
+          ⟳ Shuffle Baseline
+        </button>
+      </div>
+    </section>
+
+    <!-- KPI Metrics Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card danger" id="kpiConflictCard">
+        <div class="kpi-title">Adjacent Risk Score</div>
+        <div class="kpi-value" id="kpiConflictVal">0</div>
+        <div class="kpi-sub" id="kpiConflictSub">Conflict-Free (Optimal)</div>
+      </div>
+
+      <div class="kpi-card purple">
+        <div class="kpi-title">Chromatic Number &chi;(G)</div>
+        <div class="kpi-value" id="kpiChromaticVal">2 Colors</div>
+        <div class="kpi-sub" id="kpiChromaticSub">(r + c) mod 2 (Bipartite)</div>
+      </div>
+
+      <div class="kpi-card success" id="kpiPhpCard">
+        <div class="kpi-title">Pigeonhole Feasibility</div>
+        <div class="kpi-value" id="kpiPhpVal">Feasible</div>
+        <div class="kpi-sub" id="kpiPhpSub">Max Group (8) &le; &alpha;(G) (15)</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Hall Capacity</div>
+        <div class="kpi-value">24 / 30</div>
+        <div class="kpi-sub">6 Empty Seats Available</div>
+      </div>
+    </section>
+
+    <!-- Grid and Sidebar Layout -->
+    <section class="content-layout">
+      <!-- Interactive Grid -->
+      <div class="grid-container">
+        <div class="grid-header">
+          <h2 id="gridTitle">Seating Matrix: Graph Pattern (No Diagonals)</h2>
+          <span class="grid-instructions">Hover over any seat to inspect graph neighbors & conflicts</span>
+        </div>
+
+        <div class="seating-matrix" id="seatMatrix">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <!-- Right Sidebar: Legend & Pigeonhole Calculator -->
+      <div class="sidebar-panel">
+        <!-- Legend Card -->
+        <div class="side-card">
+          <h3>Course Population Legend</h3>
+          <div class="course-legend-list">
+            <div class="legend-row">
+              <div class="legend-info">
+                <span class="legend-dot" style="background: var(--mth-color);"></span>
+                <span>Mathematics (MTH)</span>
+              </div>
+              <span class="legend-count">8 Students</span>
+            </div>
+            <div class="legend-row">
+              <div class="legend-info">
+                <span class="legend-dot" style="background: var(--phy-color);"></span>
+                <span>Physics (PHY)</span>
+              </div>
+              <span class="legend-count">6 Students</span>
+            </div>
+            <div class="legend-row">
+              <div class="legend-info">
+                <span class="legend-dot" style="background: var(--chm-color);"></span>
+                <span>Chemistry (CHM)</span>
+              </div>
+              <span class="legend-count">5 Students</span>
+            </div>
+            <div class="legend-row">
+              <div class="legend-info">
+                <span class="legend-dot" style="background: var(--csc-color);"></span>
+                <span>Computer Science (CSC)</span>
+              </div>
+              <span class="legend-count">5 Students</span>
+            </div>
+            <div class="legend-row">
+              <div class="legend-info">
+                <span class="legend-dot" style="background: var(--empty-color); border: 1px dashed #fff;"></span>
+                <span>Empty Seat (---)</span>
+              </div>
+              <span class="legend-count">6 Seats</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Pigeonhole Explorer -->
+        <div class="side-card">
+          <h3>Pigeonhole Calculator</h3>
+          <div class="php-box">
+            <div class="slider-row">
+              <span>Max Course Size:</span>
+              <strong id="sliderMaxVal">8</strong>
+            </div>
+            <input type="range" id="cohortSlider" min="5" max="18" value="8" style="width: 100%; accent-color: #38bdf8;" oninput="updatePhpCalc()">
+            
+            <div class="slider-row">
+              <span>Indep. Set Bound &alpha;(G):</span>
+              <strong id="calcAlphaBound">15</strong>
+            </div>
+
+            <div class="php-status pass" id="calcPhpVerdict">
+              <span>✔ Zero-Conflict Feasible</span>
+            </div>
+            <p style="font-size: 0.72rem; color: var(--text-muted);" id="calcPhpExplain">
+              Since cohort size 8 &le; 15, independent sets are large enough to avoid any adjacent overlaps.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Side-by-Side Comparison Table -->
+    <section class="comparison-section">
+      <h2>Analytical Method Comparison</h2>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Seating Method</th>
+            <th>Orthogonal Score (No Diagonals)</th>
+            <th>King's Graph Score (With Diagonals)</th>
+            <th>Algorithm Type</th>
+            <th>Guaranteed Conflicts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Random Seating (Baseline)</strong></td>
+            <td><span class="score-badge score-nonzero">3 Conflicts</span></td>
+            <td><span class="score-badge score-nonzero">8 Conflicts</span></td>
+            <td>Stochastic Sampling</td>
+            <td>High (Uncontrolled)</td>
+          </tr>
+          <tr>
+            <td><strong>2. Graph Pattern (Vertex Colouring)</strong></td>
+            <td><span class="score-badge score-zero">0 Conflicts (Optimal)</span></td>
+            <td><span class="score-badge score-zero">0 Conflicts (Optimal)</span></td>
+            <td>Exact Graph Coloring</td>
+            <td>Provably Zero</td>
+          </tr>
+          <tr>
+            <td><strong>3. Hill Climbing (Local Search)</strong></td>
+            <td><span class="score-badge score-zero">0 Conflicts</span></td>
+            <td><span class="score-badge score-zero">1 Conflict</span></td>
+            <td>2-Opt Monotonic Swaps</td>
+            <td>&le; Initial Input</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Theoretical Proofs Section -->
+    <section class="theory-section">
+      <div class="theory-header" onclick="toggleTheory()">
+        <h2>Discrete Mathematics Theoretical Foundations</h2>
+        <span id="theoryChevron" style="color: var(--accent-blue); font-weight: bold;">▼ Expand Proofs</span>
+      </div>
+      <div class="theory-content" id="theoryContent">
+        <div class="theorem-card">
+          <h4>Theorem 1: Bipartiteness of Grid Graph</h4>
+          <p>
+            Two seats $(r_1, c_1)$ and $(r_2, c_2)$ are adjacent iff $|r_1 - r_2| + |c_1 - c_2| = 1$.
+            The parity $(r + c) \pmod 2$ strictly alternates across every edge. Thus, all closed cycles have even length.
+            By <strong>K&ouml;nig's Theorem</strong>, a graph has no odd cycles if and only if it is bipartite (&chi;(G) = 2).
+          </p>
+        </div>
+
+        <div class="theorem-card">
+          <h4>Theorem 2: 4-Colourability of King's Graph</h4>
+          <p>
+            Every $2 \times 2$ block of seats forms a complete subgraph $K_4$ where all pairs share an edge.
+            Since &chi;(G) &ge; &omega;(G) = 4, at least 4 colours are necessary.
+            The 2D modular formula $\text{colour}(r, c) = (r \bmod 2) \times 2 + (c \bmod 2)$ guarantees adjacent seats never share coordinates in modulo 2, achieving a proper 4-colouring.
+          </p>
+        </div>
+
+        <div class="theorem-card">
+          <h4>Theorem 3: Pigeonhole Feasibility Bound</h4>
+          <p>
+            To achieve zero conflicts, every student of course $C$ must sit in an <strong>independent set</strong>.
+            If $|C| > \alpha(G_{\text{seat}})$, by the Pigeonhole Principle, at least two students must occupy adjacent seats, rendering zero conflicts mathematically impossible.
+          </p>
+        </div>
+
+        <div class="theorem-card">
+          <h4>Theorem 4: Greedy Colouring Bound &Delta;(G) + 1</h4>
+          <p>
+            A greedy vertex colouring uses at most $\Delta(G) + 1$ colours. Since a vertex has at most $\Delta(G)$ neighbours, at least one colour from $\{0, 1, \dots, \Delta(G)\}$ remains free.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>Discrete Mathematics Project &bull; <strong>Graph-Theoretic Exam Seating Arrangement</strong></p>
+    <p style="margin-top: 0.25rem;">Developed by <strong>Pranjali Nitin Bharsakale</strong> | PRN: 1251070295 | Roll No: 2</p>
+  </footer>
+
+  <!-- Script Logic -->
+  <script>
+    const ROWS = 5;
+    const COLS = 6;
+
+    // Student Dataset
+    const STUDENTS = [
+      // Maths (8)
+      { id: 1, name: "Aarav Sharma", roll: "MTH101", course: "Mathematics", code: "MTH", cls: "mth" },
+      { id: 2, name: "Ananya Patel", roll: "MTH102", course: "Mathematics", code: "MTH", cls: "mth" },
+      { id: 3, name: "Aditya Verma", roll: "MTH103", course: "Mathematics", code: "MTH", cls: "mth" },
+      { id: 4, name: "Diya Kulkarni", roll: "MTH104", course: "Mathematics", code: "MTH", cls: "mth" },
+      { id: 5, name: "Ishan Joshi", roll: "MTH105", course: "Mathematics", code: "MTH", cls: "mth" },
+      { id: 6, name: "Kavya Deshmukh", roll: "MTH106", course: "Mathematics", code: "MTH", cls: "mth" },
+      { id: 7, name: "Manish Gupta", roll: "MTH107", course: "Mathematics", code: "MTH", cls: "mth" },
+      { id: 8, name: "Neha Shinde", roll: "MTH108", course: "Mathematics", code: "MTH", cls: "mth" },
+      // Physics (6)
+      { id: 9, name: "Omkar Jadhav", roll: "PHY201", course: "Physics", code: "PHY", cls: "phy" },
+      { id: 10, name: "Pooja Patil", roll: "PHY202", course: "Physics", code: "PHY", cls: "phy" },
+      { id: 11, name: "Pranav Kale", roll: "PHY203", course: "Physics", code: "PHY", cls: "phy" },
+      { id: 12, name: "Riya More", roll: "PHY204", course: "Physics", code: "PHY", cls: "phy" },
+      { id: 13, name: "Rohan Pawar", roll: "PHY205", course: "Physics", code: "PHY", cls: "phy" },
+      { id: 14, name: "Sakshi Bhosale", roll: "PHY206", course: "Physics", code: "PHY", cls: "phy" },
+      // Chemistry (5)
+      { id: 15, name: "Tanmay Sawant", roll: "CHM301", course: "Chemistry", code: "CHM", cls: "chm" },
+      { id: 16, name: "Utkarsh Wagh", roll: "CHM302", course: "Chemistry", code: "CHM", cls: "chm" },
+      { id: 17, name: "Vaishnavi Kadam", roll: "CHM303", course: "Chemistry", code: "CHM", cls: "chm" },
+      { id: 18, name: "Yash Gaikwad", roll: "CHM304", course: "Chemistry", code: "CHM", cls: "chm" },
+      { id: 19, name: "Zoya Khan", roll: "CHM305", course: "Chemistry", code: "CHM", cls: "chm" },
+      // CS (5)
+      { id: 20, name: "Aryan Mehta", roll: "CSC401", course: "Computer Science", code: "CSC", cls: "csc" },
+      { id: 21, name: "Bhavna Nair", roll: "CSC402", course: "Computer Science", code: "CSC", cls: "csc" },
+      { id: 22, name: "Chetan Rao", roll: "CSC403", course: "Computer Science", code: "CSC", cls: "csc" },
+      { id: 23, name: "Deepika Sen", roll: "CSC404", course: "Computer Science", code: "CSC", cls: "csc" },
+      { id: 24, name: "Eashan Roy", roll: "CSC405", course: "Computer Science", code: "CSC", cls: "csc" }
+    ];
+
+    let includeDiagonals = false;
+    let currentMethod = 'pattern';
+    let currentGrid = [];
+    let isSimulating = false;
+
+    // Build Neighbors
+    function getNeighbors(r, c, withDiag) {
+      const deltas = [[-1,0],[1,0],[0,-1],[0,1]];
+      if (withDiag) {
+        deltas.push([-1,-1],[-1,1],[1,-1],[1,1]);
+      }
+      const res = [];
+      for (let [dr, dc] of deltas) {
+        let nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+          res.push([nr, nc]);
+        }
+      }
+      return res;
+    }
+
+    // Risk Score Calculation
+    function calculateScore(grid, withDiag) {
+      let conflicts = 0;
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const s1 = grid[r][c];
+          if (!s1) continue;
+          const nbrs = getNeighbors(r, c, withDiag);
+          for (let [nr, nc] of nbrs) {
+            // Count each undirected edge once: only when (r, c) < (nr, nc)
+            if (r < nr || (r === nr && c < nc)) {
+              const s2 = grid[nr][nc];
+              if (s2 && s1.course === s2.course) {
+                conflicts++;
+              }
+            }
+          }
+        }
+      }
+      return conflicts;
+    }
+
+    // Generate Layouts
+    function generatePatternLayout(withDiag) {
+      const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+      if (!withDiag) {
+        // Bipartite (2 colors): Maths(8) & Physics(6) in color 0 (14 seats <= 15), CHM(5) & CSC(5) in color 1 (10 seats <= 15)
+        const c0 = [];
+        const c1 = [];
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            if ((r + c) % 2 === 0) c0.push([r, c]);
+            else c1.push([r, c]);
+          }
+        }
+        const g0Students = STUDENTS.filter(s => s.code === 'MTH' || s.code === 'PHY');
+        const g1Students = STUDENTS.filter(s => s.code === 'CHM' || s.code === 'CSC');
+
+        g0Students.forEach((st, i) => { grid[c0[i][0]][c0[i][1]] = st; });
+        g1Students.forEach((st, i) => { grid[c1[i][0]][c1[i][1]] = st; });
+      } else {
+        // 4 Colors (2x2 King's graph)
+        // MTH -> color (0,0), PHY -> color (0,1), CHM -> color (1,0), CSC -> color (1,1)
+        const buckets = { 0: [], 1: [], 2: [], 3: [] };
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            const clr = (r % 2) * 2 + (c % 2);
+            buckets[clr].push([r, c]);
+          }
+        }
+        const mth = STUDENTS.filter(s => s.code === 'MTH');
+        const phy = STUDENTS.filter(s => s.code === 'PHY');
+        const chm = STUDENTS.filter(s => s.code === 'CHM');
+        const csc = STUDENTS.filter(s => s.code === 'CSC');
+
+        mth.forEach((st, i) => { grid[buckets[0][i][0]][buckets[0][i][1]] = st; });
+        phy.forEach((st, i) => { grid[buckets[1][i][0]][buckets[1][i][1]] = st; });
+        chm.forEach((st, i) => { grid[buckets[2][i][0]][buckets[2][i][1]] = st; });
+        csc.forEach((st, i) => { grid[buckets[3][i][0]][buckets[3][i][1]] = st; });
+      }
+      return grid;
+    }
+
+    function generateRandomLayout() {
+      const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+      const seats = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) seats.push([r, c]);
+      }
+      // Pseudo-random shuffle with fixed reproducible pattern or math.random
+      seats.sort(() => Math.random() - 0.5);
+      STUDENTS.forEach((st, idx) => {
+        const [r, c] = seats[idx];
+        grid[r][c] = st;
+      });
+      return grid;
+    }
+
+    function generateOptimizedLayout(withDiag) {
+      let grid = generateRandomLayout();
+      let bestScore = calculateScore(grid, withDiag);
+      const allSeats = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) allSeats.push([r, c]);
+      }
+
+      for (let it = 0; it < 2000; it++) {
+        if (bestScore === 0) break;
+        const i1 = Math.floor(Math.random() * allSeats.length);
+        const i2 = Math.floor(Math.random() * allSeats.length);
+        if (i1 === i2) continue;
+        const [r1, c1] = allSeats[i1];
+        const [r2, c2] = allSeats[i2];
+
+        // Tentative swap
+        const temp = grid[r1][c1];
+        grid[r1][c1] = grid[r2][c2];
+        grid[r2][c2] = temp;
+
+        const newScore = calculateScore(grid, withDiag);
+        if (newScore < bestScore) {
+          bestScore = newScore;
+        } else {
+          // Revert
+          grid[r2][c2] = grid[r1][c1];
+          grid[r1][c1] = temp;
+        }
+      }
+      return grid;
+    }
+
+    // Render Grid
+    function render() {
+      if (currentMethod === 'pattern') {
+        currentGrid = generatePatternLayout(includeDiagonals);
+      } else if (currentMethod === 'random') {
+        currentGrid = generateRandomLayout();
+      } else if (currentMethod === 'optimize') {
+        currentGrid = generateOptimizedLayout(includeDiagonals);
+      }
+
+      updateGridDisplay();
+      updateMetrics();
+    }
+
+    function updateGridDisplay() {
+      const matrixEl = document.getElementById("seatMatrix");
+      matrixEl.innerHTML = "";
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const st = currentGrid[r][c];
+          const cell = document.createElement("div");
+          cell.className = "seat-cell";
+          cell.dataset.r = r;
+          cell.dataset.c = c;
+
+          const clrId = includeDiagonals ? ((r % 2) * 2 + (c % 2)) : ((r + c) % 2);
+
+          let innerHtml = `
+            <span class="seat-pos">(${r},${c})</span>
+            <span class="seat-color-badge">C${clrId}</span>
+          `;
+
+          if (st) {
+            innerHtml += `
+              <div class="course-tag ${st.cls}">${st.code}</div>
+              <div class="student-roll">${st.roll}</div>
+              <div class="student-name-sub">${st.name}</div>
+            `;
+          } else {
+            innerHtml += `
+              <div class="course-tag empty">---</div>
+              <div class="student-roll" style="color: var(--text-muted);">(Empty)</div>
+              <div class="student-name-sub">-</div>
+            `;
+          }
+
+          cell.innerHTML = innerHtml;
+
+          // Mouse hover interactions
+          cell.addEventListener("mouseenter", () => highlightNeighbors(r, c));
+          cell.addEventListener("mouseleave", clearHighlights);
+
+          matrixEl.appendChild(cell);
+        }
+      }
+    }
+
+    function highlightNeighbors(r, c) {
+      clearHighlights();
+      const targetCell = document.querySelector(`.seat-cell[data-r="${r}"][data-c="${c}"]`);
+      if (targetCell) targetCell.classList.add("is-hovered");
+
+      const currStudent = currentGrid[r][c];
+      const nbrs = getNeighbors(r, c, includeDiagonals);
+
+      nbrs.forEach(([nr, nc]) => {
+        const nbrCell = document.querySelector(`.seat-cell[data-r="${nr}"][data-c="${nc}"]`);
+        if (nbrCell) {
+          nbrCell.classList.add("is-neighbor");
+          const nbrStudent = currentGrid[nr][nc];
+          if (currStudent && nbrStudent && currStudent.course === nbrStudent.course) {
+            nbrCell.classList.add("is-conflict");
+            if (targetCell) targetCell.classList.add("is-conflict");
+          }
+        }
+      });
+    }
+
+    function clearHighlights() {
+      document.querySelectorAll(".seat-cell").forEach(cell => {
+        cell.classList.remove("is-hovered", "is-neighbor", "is-conflict");
+      });
+    }
+
+    function updateMetrics() {
+      const score = calculateScore(currentGrid, includeDiagonals);
+      const kpiScore = document.getElementById("kpiConflictVal");
+      const kpiSub = document.getElementById("kpiConflictSub");
+      const kpiCard = document.getElementById("kpiConflictCard");
+
+      kpiScore.innerText = score;
+      if (score === 0) {
+        kpiSub.innerText = "Conflict-Free (Optimal)";
+        kpiCard.className = "kpi-card success";
+      } else {
+        kpiSub.innerText = `${score} Adjacent Same-Course Pair(s)`;
+        kpiCard.className = "kpi-card danger";
+      }
+
+      // Chromatic
+      const kpiChr = document.getElementById("kpiChromaticVal");
+      const kpiChrSub = document.getElementById("kpiChromaticSub");
+      if (!includeDiagonals) {
+        kpiChr.innerText = "2 Colors";
+        kpiChrSub.innerText = "(r + c) mod 2 (Bipartite Graph)";
+      } else {
+        kpiChr.innerText = "4 Colors";
+        kpiChrSub.innerText = "(r%2)*2 + (c%2) (K4 Cliques)";
+      }
+
+      // Feasibility
+      const bound = includeDiagonals ? 9 : 15;
+      const kpiPhp = document.getElementById("kpiPhpVal");
+      const kpiPhpSub = document.getElementById("kpiPhpSub");
+      kpiPhp.innerText = "Feasible";
+      kpiPhpSub.innerText = `Max Group (8) ≤ α(G) (${bound})`;
+
+      // Title
+      const title = document.getElementById("gridTitle");
+      const mName = currentMethod === 'pattern' ? 'Graph Pattern Colouring' :
+                    currentMethod === 'random' ? 'Random Baseline' : 'Hill Climbing';
+      const dName = includeDiagonals ? 'With Diagonals' : 'No Diagonals';
+      title.innerText = `Seating Matrix: ${mName} [${dName}]`;
+    }
+
+    function setConnectivity(diag) {
+      includeDiagonals = diag;
+      document.getElementById("btnNoDiag").classList.toggle("active", !diag);
+      document.getElementById("btnDiag").classList.toggle("active", diag);
+      updatePhpCalc();
+      render();
+    }
+
+    function setMethod(method) {
+      currentMethod = method;
+      document.getElementById("tabRand").classList.toggle("active", method === 'random');
+      document.getElementById("tabPattern").classList.toggle("active", method === 'pattern');
+      document.getElementById("tabOpt").classList.toggle("active", method === 'optimize');
+      render();
+    }
+
+    function resetOrRegenerate() {
+      if (currentMethod === 'pattern') {
+        alert("Graph Pattern is an analytical optimal method. Its assignment is mathematically exact and optimal.");
+      } else {
+        render();
+      }
+    }
+
+    function updatePhpCalc() {
+      const maxVal = parseInt(document.getElementById("cohortSlider").value);
+      document.getElementById("sliderMaxVal").innerText = maxVal;
+      const bound = includeDiagonals ? 9 : 15;
+      document.getElementById("calcAlphaBound").innerText = bound;
+
+      const verdictEl = document.getElementById("calcPhpVerdict");
+      const explainEl = document.getElementById("calcPhpExplain");
+
+      if (maxVal <= bound) {
+        verdictEl.className = "php-status pass";
+        verdictEl.innerHTML = "✔ Zero-Conflict Feasible";
+        explainEl.innerText = `Cohort size ${maxVal} ≤ maximum independent set ${bound}. Zero conflicts is mathematically achievable.`;
+      } else {
+        verdictEl.className = "php-status fail";
+        verdictEl.innerHTML = "✖ Mathematically Impossible";
+        explainEl.innerText = `By the Pigeonhole Principle, putting ${maxVal} students into at most ${bound} non-adjacent seats guarantees at least one conflict!`;
+      }
+    }
+
+    function toggleTheory() {
+      const content = document.getElementById("theoryContent");
+      const chevron = document.getElementById("theoryChevron");
+      if (content.style.display === "none") {
+        content.style.display = "grid";
+        chevron.innerText = "▲ Collapse Proofs";
+      } else {
+        content.style.display = "none";
+        chevron.innerText = "▼ Expand Proofs";
+      }
+    }
+
+    // Live Hill Climbing Simulation Animation
+    async function runHillClimbingLive() {
+      if (isSimulating) return;
+      isSimulating = true;
+      const btn = document.getElementById("btnSimulate");
+      btn.disabled = true;
+      btn.innerText = "⏳ Optimizing...";
+
+      // Start from random
+      currentMethod = 'optimize';
+      document.getElementById("tabRand").classList.remove("active");
+      document.getElementById("tabPattern").classList.remove("active");
+      document.getElementById("tabOpt").classList.add("active");
+
+      currentGrid = generateRandomLayout();
+      updateGridDisplay();
+      updateMetrics();
+
+      let currentScore = calculateScore(currentGrid, includeDiagonals);
+      const allSeats = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) allSeats.push([r, c]);
+      }
+
+      for (let step = 0; step < 80; step++) {
+        if (currentScore === 0) break;
+
+        const i1 = Math.floor(Math.random() * allSeats.length);
+        const i2 = Math.floor(Math.random() * allSeats.length);
+        if (i1 === i2) continue;
+        const [r1, c1] = allSeats[i1];
+        const [r2, c2] = allSeats[i2];
+
+        // Tentative swap
+        const temp = currentGrid[r1][c1];
+        currentGrid[r1][c1] = currentGrid[r2][c2];
+        currentGrid[r2][c2] = temp;
+
+        const newScore = calculateScore(currentGrid, includeDiagonals);
+        if (newScore < currentScore) {
+          currentScore = newScore;
+          updateGridDisplay();
+          updateMetrics();
+          await new Promise(r => setTimeout(r, 60)); // Live animation delay
+        } else {
+          // Revert
+          currentGrid[r2][c2] = currentGrid[r1][c1];
+          currentGrid[r1][c1] = temp;
+        }
+      }
+
+      btn.disabled = false;
+      btn.innerText = "▶ Live Optimization";
+      isSimulating = false;
+      updateGridDisplay();
+      updateMetrics();
+    }
+
+    // Initial boot
+    window.addEventListener("DOMContentLoaded", () => {
+      render();
+      updatePhpCalc();
+    });
+  </script>
+</body>
+</html>
